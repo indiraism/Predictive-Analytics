@@ -50,7 +50,7 @@ Menjelaskan tujuan dari pernyataan masalah:
 
 ## Data Understanding
 
-### EDA - Deskripsi Variabel
+### Deskripsi Variabel
 **Informasi Datasets**
 
 
