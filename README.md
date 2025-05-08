@@ -43,11 +43,7 @@ Menjelaskan tujuan dari pernyataan masalah:
     -   Target: Mencapai Recall >85% dalam mengidentifikasi pasien berisiko diabetes.
     -   Metrik: Performa model diukur menggunakan F1-Score.
 
-3.  Memperluas Akses Skrining
-    -   Target: Mengintegrasikan model ke dalam platform kesehatan digital untuk skrining mandiri.
-    -   Metrik: Jumlah pengguna yang melakukan skrining dalam 1 tahun pertama.
-
-4.  Mengatasi Ketidakseimbangan Data
+3.  Mengatasi Ketidakseimbangan Data
     -   Target: Menggunakan GAN untuk menghasilkan data sintetis sehingga rasio diabetes:non-diabetes menjadi 1:1.
     -   Metrik: Peningkatan precision-recall balance setelah augmentasi data.
 
@@ -62,7 +58,14 @@ Menjelaskan tujuan dari pernyataan masalah:
         -   **Langkah 2**: Gabungkan data asli dan sintetis untuk melatih model klasifikasi (Neural Network).
         -   **Manfaat Bisnis**: Meningkatkan akurasi prediksi untuk pasien minoritas (diabetes) dan mengurangi false negatives (pasien diabetes yang terlewat).
 
-    
+
+**Business Impact Mapping:**
+1. Biaya Kesehatan → Deteksi dini → Kurangi komplikasi mahal
+
+2. Akurasi Skrining → Recall tinggi → Lebih sedikit false negatives
+
+3. Data Tidak Seimbang → GAN → Prediksi lebih adil dan akurat
+
 
 ## Data Understanding
 
@@ -185,40 +188,37 @@ Pada proses _Data Preprocessing_ dilakukan:
 - Mengganti nilai kategorikal pada kolom `gender` dan `smoking_history` dengan nilai numerik.
 - Memisahkan data menjadi fitur (X) dan label (y)
 - Memisahkan data menjadi data latih dan data uji
-- Melatih data latih dengan `RandomForestClassifier`
-- Melakukan prediksi pada data uji
-- Menghitung akurasi prediksi
 
 
 ## Modeling
 
 1. **Pembuatan Generative Adversarial Network (GAN)**
-    s. **Generator**
-        - Tugas: Membuat data sintetis yang mirip dengan data asli.
-        - Cara Kerja:
-            1. Menerima input noise vector (random values) dari distribusi normal (`z ~ N(0,1)`).
-            2. Melewatkannya melalui serangkaian layer neural network (biasanya Dense atau Conv layers).
-            3. Menghasilkan output berupa data sintetis (misalnya, record pasien diabetes dengan `HbA1c_level`, `age`, dll.).
-            4. Tujuan: Menipu Discriminator agar mengklasifikasikan data sintetis sebagai "nyata"
+a. **Generator**
+    - Tugas: Membuat data sintetis yang mirip dengan data asli.
+    - Cara Kerja:
+        1. Menerima input noise vector (random values) dari distribusi normal (`z ~ N(0,1)`).
+        2. Melewatkannya melalui serangkaian layer neural network (biasanya Dense atau Conv layers).
+        3. Menghasilkan output berupa data sintetis (misalnya, record pasien diabetes dengan `HbA1c_level`, `age`, dll.).
+        4. Tujuan: Menipu Discriminator agar mengklasifikasikan data sintetis sebagai "nyata"
 
-    b.  **Discriminator**:
-        - Tugas: Membedakan data asli vs. data sintetis dari Generator.
-        - Cara Kerja:
-            1. Menerima input data asli (dari dataset) dan data sintetis (dari Generator).
-            2. Melewatkannya melalui neural network untuk klasifikasi biner.
-            3. Mengeluarkan probabilitas (`0` = sintetis, `1` = asli).
-            4. Tujuan: Mempelajari pola data asli sehingga bisa mendeteksi data palsu.
+b.  **Discriminator**:
+    - Tugas: Membedakan data asli vs. data sintetis dari Generator.
+    - Cara Kerja:
+        1. Menerima input data asli (dari dataset) dan data sintetis (dari Generator).
+        2. Melewatkannya melalui neural network untuk klasifikasi biner.
+        3. Mengeluarkan probabilitas (`0` = sintetis, `1` = asli).
+        4. Tujuan: Mempelajari pola data asli sehingga bisa mendeteksi data palsu.
 
-    c.  **Proses Pelatihan GAN**:
-        1. Latih Discriminator:
-            - Gunakan data asli (label = `1`) dan data sintetis (label = `0`).
-            - Hitung loss (`binary_crossentropy`) dan update bobot Discriminator.
+c.  **Proses Pelatihan GAN**:
+    1. Latih Discriminator:
+        - Gunakan data asli (label = `1`) dan data sintetis (label = `0`).
+        - Hitung loss (`binary_crossentropy`) dan update bobot Discriminator.
 
-        2. Latih Generator:
-            - Bekukan Discriminator, hasilkan data sintetis, dan beri label `1` (seolah-olah data asli).
-            - Hitung loss dan update bobot Generator.
+    2. Latih Generator:
+        - Bekukan Discriminator, hasilkan data sintetis, dan beri label `1` (seolah-olah data asli).
+        - Hitung loss dan update bobot Generator.
 
-        3. Ulangi hingga Generator menghasilkan data yang tidak bisa dibedakan oleh Discriminator.
+    3. Ulangi hingga Generator menghasilkan data yang tidak bisa dibedakan oleh Discriminator.
 
 2. **Cara Kerja Prediksi Diabetes dengan GAN-Augmented Data**
     Setelah GAN dilatih, langkah prediksi diabetes adalah:
@@ -234,6 +234,34 @@ Pada proses _Data Preprocessing_ dilakukan:
             - Model belajar pola dari data yang sudah seimbang.
             - Evaluasi dengan metrik Recall (fokus pada deteksi pasien diabetes).
 
+3. **Cara Kerja Random Forest**
+    Random Forest adalah algoritma machine learning yang termasuk dalam kategori ensemble learning. Cara kerjanya adalah sebagai berikut:
+
+    A. Bootstrap Sampling
+        - Random Forest membuat banyak subset data secara acak dari dataset asli dengan metode bootstrap sampling. Ini berarti beberapa baris data mungkin muncul beberapa kali di subset, sementara yang lain mungkin tidak muncul sama sekali.
+    
+    B. Pembentukan Pohon Keputusan
+        - Untuk setiap subset data, algoritma membangun sebuah pohon keputusan. Namun, ada perbedaan penting dari pohon keputusan biasa: **Random Subspace:** Setiap pohon hanya boleh memilih sebagian acak dari fitur-fitur yang tersedia untuk menentukan pemisahan (split) pada setiap node. Ini disebut juga "feature bagging".
+
+    C. Prediksi
+        - Ketika ingin membuat prediksi untuk data baru, setiap pohon di dalam forest memberikan prediksinya (misalnya, kelas untuk klasifikasi atau nilai untuk regresi).
+        - Untuk klasifikasi, Random Forest mengambil "voting mayoritas" dari prediksi semua pohon (kelas yang paling sering diprediksi).
+        - Untuk regresi, Random Forest mengambil rata-rata dari prediksi semua pohon.
+
+Algoritma Random Forest digunakan dengan parameter-parameter berikut:
+
+````
+model = RandomForestClassifier(n_estimators=300)
+model.fit(X_train, y_train)
+````
+
+Penjelasan:
+
+- `n_estimators`: Parameter ini menentukan jumlah pohon keputusan yang akan dibangun oleh Random Forest. Dalam kode, nilainya adalah `300`. Ini berarti model akan membuat 300 pohon keputusan. Semakin banyak pohon umumnya meningkatkan kinerja model, tetapi juga meningkatkan waktu pelatihan.
+
+- `X_train`: Ini adalah data fitur yang digunakan untuk melatih model.
+
+- `y_train`: Ini adalah label atau target variabel yang sesuai dengan `X_train`, yang digunakan untuk melatih model dalam tugas klasifikasi.
 
 **Kelebihan dan Kekurangan Algoritma**
 
@@ -394,3 +422,4 @@ Kesimpulan:
 2. American Diabetes Association. (2022). Standards of Medical Care in Diabetes. Diabetes Care, 45(Supplement_1). https://doi.org/10.2337/dc22-SINT
 3. Goodfellow, I., et al. (2014). Generative Adversarial Networks. arXiv:1406.2661. https://arxiv.org/abs/1406.2661
 4. Mariani, G., et al. (2018). BAGAN: Data Augmentation with Balancing GAN. arXiv:1803.09655. https://arxiv.org/abs/1803.09655
+5. Scikit-learn Documentation: [RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
