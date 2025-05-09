@@ -101,18 +101,20 @@ Tabel 1. EDA Deskripsi Variabel
 - Dataset memiliki 3 fitur bertipe float64 , 2 fitur bertipe object dan 4 fitur bertipe int64
 - Tidak terdapat missing values
 - Outlier Detection:
-    1.  Anomalies Detected:
-        Age: Infants (likely data entry errors).
-        BMI: Values < 12 or > 60 (extreme cases).
-        Glucose: Values > 250 mg/dL (critical hyperglycemia).
+
+  a.  Anomalies Detected:
+  - Age: Infants (likely data entry errors).
+  - BMI: Values < 12 or > 60 (extreme cases).
+  - Glucose: Values > 250 mg/dL (critical hyperglycemia).
         
-    2.  Action Plan:
-        Remove infants (age < 10) since Type 2 diabetes is age-related.
-        Cap BMI at 15 (minimum realistic) and 60 (extreme obesity).
+  b.  Action Plan:
+  - Remove infants (age < 10) since Type 2 diabetes is age-related.
+  - Cap BMI at 15 (minimum realistic) and 60 (extreme obesity).
 
 ### EDA - Univariate Analysis
 
-![Univariate Analysis (Categorical Variables)](/image/Categorical_Variables.png)
+![Categorical_Variables](https://github.com/user-attachments/assets/e141fb60-036d-4e8e-b1f7-39298b4139f8)
+
 
 Gambar 1a. Univariate Analysis (Categorical Variables)
 
@@ -135,7 +137,8 @@ Gambar 1a. Univariate Analysis (Categorical Variables)
     - Terlihat bahwa jumlah pasien negatif diabetes jauh lebih banyak daripada yang positif. Ini menciptakan class imbalance, yang perlu ditangani dalam pemodelan untuk mencegah bias terhadap kelas mayoritas.
 
 
-![Univariate Analysis (Numerical Variables)](/image/Numerical_Variables.png)
+![Numerical_Variables](https://github.com/user-attachments/assets/2bbd26f3-2c6a-4701-bdd3-6e284c906aee)
+
 
 Gambar 1b. Univariate Analysis (Numerical Variables)
 
@@ -159,7 +162,7 @@ Gambar 1b. Univariate Analysis (Numerical Variables)
 3. BMI dan age menunjukkan distribusi yang relatif normal, meskipun perlu pemeriksaan lebih lanjut untuk outlier atau skewness.
 
 
-![Correlation Matrix](/image/Correlation_Matrix.png)
+![Correlation_Matrix](https://github.com/user-attachments/assets/ead4bb97-3a0a-492c-879a-246ea65601d0)
 
 Gambar 2a. Correlation Matrix
 
@@ -207,7 +210,8 @@ Pada proses _Data Preparation_ dilakukan kegiatan seperti:
 ## Modeling
 
 1. **Pembuatan Generative Adversarial Network (GAN)**
-a. **Generator**
+   
+    a. **Generator**
     - Tugas: Membuat data sintetis yang mirip dengan data asli.
     - Cara Kerja:
         1. Menerima input noise vector (random values) dari distribusi normal (`z ~ N(0,1)`).
@@ -215,7 +219,7 @@ a. **Generator**
         3. Menghasilkan output berupa data sintetis (misalnya, record pasien diabetes dengan `HbA1c_level`, `age`, dll.).
         4. Tujuan: Menipu Discriminator agar mengklasifikasikan data sintetis sebagai "nyata"
 
-b.  **Discriminator**:
+    b.  **Discriminator**
     - Tugas: Membedakan data asli vs. data sintetis dari Generator.
     - Cara Kerja:
         1. Menerima input data asli (dari dataset) dan data sintetis (dari Generator).
@@ -223,44 +227,47 @@ b.  **Discriminator**:
         3. Mengeluarkan probabilitas (`0` = sintetis, `1` = asli).
         4. Tujuan: Mempelajari pola data asli sehingga bisa mendeteksi data palsu.
 
-c.  **Proses Pelatihan GAN**:
-    1. Latih Discriminator:
-        - Gunakan data asli (label = `1`) dan data sintetis (label = `0`).
-        - Hitung loss (`binary_crossentropy`) dan update bobot Discriminator.
+    c.  **Proses Pelatihan GAN**
+    - Latih Discriminator:
+        1) Gunakan data asli (label = `1`) dan data sintetis (label = `0`).
+        2) Hitung loss (`binary_crossentropy`) dan update bobot Discriminator.
 
-    2. Latih Generator:
-        - Bekukan Discriminator, hasilkan data sintetis, dan beri label `1` (seolah-olah data asli).
-        - Hitung loss dan update bobot Generator.
+    - Latih Generator:
+        1) Bekukan Discriminator, hasilkan data sintetis, dan beri label `1` (seolah-olah data asli).
+        2) Hitung loss dan update bobot Generator.
 
-    3. Ulangi hingga Generator menghasilkan data yang tidak bisa dibedakan oleh Discriminator.
+    - Ulangi hingga Generator menghasilkan data yang tidak bisa dibedakan oleh Discriminator.
 
 2. **Cara Kerja Prediksi Diabetes dengan GAN-Augmented Data**
+
     Setelah GAN dilatih, langkah prediksi diabetes adalah:
+   
+- Augmentasi Data
+  - Generator menghasilkan data sintetis pasien diabetes (`diabetes=1`).
+  - Data sintetis digabung dengan data asli untuk menyeimbangkan kelas.
 
-    A. Augmentasi Data
-        1. Generator menghasilkan data sintetis pasien diabetes (`diabetes=1`).
-        2. Data sintetis digabung dengan data asli untuk menyeimbangkan kelas.
-
-    B. Pelatihan Classifier (XGBoost/Neural Network)
-        1. Input: Data asli + sintetis (fitur: `HbA1c_level`, `age`, dll.).
-        2. Target: Label `diabetes` (0/1).
-        3. Proses:
-            - Model belajar pola dari data yang sudah seimbang.
-            - Evaluasi dengan metrik Recall (fokus pada deteksi pasien diabetes).
+- Pelatihan Classifier (XGBoost/Neural Network)
+  - Input: Data asli + sintetis (fitur: `HbA1c_level`, `age`, dll.).
+  - Target: Label `diabetes` (0/1).
+  - Proses:
+    - Model belajar pola dari data yang sudah seimbang.
+    - Evaluasi dengan metrik Recall (fokus pada deteksi pasien diabetes).
 
 3. **Cara Kerja Random Forest**
-    Random Forest adalah algoritma machine learning yang termasuk dalam kategori ensemble learning. Cara kerjanya adalah sebagai berikut:
 
-    A. Bootstrap Sampling
-        - Random Forest membuat banyak subset data secara acak dari dataset asli dengan metode bootstrap sampling. Ini berarti beberapa baris data mungkin muncul beberapa kali di subset, sementara yang lain mungkin tidak muncul sama sekali.
+Random Forest adalah algoritma machine learning yang termasuk dalam kategori ensemble learning. Cara kerjanya adalah sebagai berikut:
+
+a. Bootstrap Sampling
+- Random Forest membuat banyak subset data secara acak dari dataset asli dengan metode bootstrap sampling.            Ini berarti beberapa baris data mungkin muncul beberapa kali di subset, sementara yang lain mungkin tidak           muncul sama sekali.
     
-    B. Pembentukan Pohon Keputusan
-        - Untuk setiap subset data, algoritma membangun sebuah pohon keputusan. Namun, ada perbedaan penting dari pohon keputusan biasa: **Random Subspace:** Setiap pohon hanya boleh memilih sebagian acak dari fitur-fitur yang tersedia untuk menentukan pemisahan (split) pada setiap node. Ini disebut juga "feature bagging".
+b. Pembentukan Pohon Keputusan
+- Untuk setiap subset data, algoritma membangun sebuah pohon keputusan. Namun, ada perbedaan penting dari             pohon keputusan biasa: **Random Subspace:** Setiap pohon hanya boleh memilih sebagian acak dari fitur-              fitur yang tersedia untuk menentukan pemisahan (split) pada setiap node. Ini disebut juga "feature                  bagging".
 
-    C. Prediksi
-        - Ketika ingin membuat prediksi untuk data baru, setiap pohon di dalam forest memberikan prediksinya (misalnya, kelas untuk klasifikasi atau nilai untuk regresi).
-        - Untuk klasifikasi, Random Forest mengambil "voting mayoritas" dari prediksi semua pohon (kelas yang paling sering diprediksi).
-        - Untuk regresi, Random Forest mengambil rata-rata dari prediksi semua pohon.
+c. Prediksi
+- Ketika ingin membuat prediksi untuk data baru, setiap pohon di dalam forest memberikan prediksinya                 (misalnya, kelas untuk klasifikasi atau nilai untuk regresi).
+- Untuk klasifikasi, Random Forest mengambil "voting mayoritas" dari prediksi semua pohon (kelas yang                 paling sering diprediksi).
+- Untuk regresi, Random Forest mengambil rata-rata dari prediksi semua pohon.
+
 
 Algoritma Random Forest digunakan dengan parameter-parameter berikut:
 
@@ -320,13 +327,14 @@ Kekurangan:
 -   Kurang interpretabel dibanding single decision tree
 
 **Pemilihan Model Terbaik**
-Berdasarkan hasil:
-a.  Model dengan data asli: Akurasi 97% (tapi recall kelas minoritas 70%)
-b.  Model dengan data sintetik: Akurasi 89.7% dengan recall lebih seimbang
+
+Berdasarkan hasil
+- Model dengan data asli: Akurasi 97% (tapi recall kelas minoritas 70%)
+- Model dengan data sintetik: Akurasi 89.7% dengan recall lebih seimbang
 
 ### Latih Data
 
-![Training Loss 1](/image/TrainingLoss1.png) 
+![TrainingLoss1](https://github.com/user-attachments/assets/234351d5-0244-4c78-9ffe-336a5a33573f)
 
 Gambar 1a.  Training Loss 1
 
@@ -334,7 +342,7 @@ Gambar 1a.  Training Loss 1
 -   Skala loss lebih rendah (0.25-1.75)
 -   Mungkin menunjukkan konvergensi yang lebih baik atau tahap pelatihan yang berbeda
 
-![Training Loss 2](/image/TrainingLoss2.png)
+![TrainingLoss2](https://github.com/user-attachments/assets/da651c4e-6e16-4d27-95eb-cc3f96e2dc0a)
 
 Gambar 1b.  Traininng Loss 2
 
@@ -345,9 +353,9 @@ Gambar 1b.  Traininng Loss 2
 
 ## Evaluation
 
-Menguji 2 skema pelatihan untuk prediksi diabetes:
-    1. Model Baseline (tanpa GAN, menggunakan data asli yang tidak seimbang).
-    2. Model GAN-Augmented (dengan data sintetis untuk menyeimbangkan kelas).
+Menguji 2 skema pelatihan untuk prediksi diabetes
+1. Model Baseline (tanpa GAN, menggunakan data asli yang tidak seimbang).
+2. Model GAN-Augmented (dengan data sintetis untuk menyeimbangkan kelas).
 
 **Analisis Perbedaan Utama**
 
@@ -359,24 +367,26 @@ Menguji 2 skema pelatihan untuk prediksi diabetes:
 | F1-Score | 80% (moderat) | 91% (tinggi) | Keseimbangan precision-recall lebih baik |
 | Dukungan Bisnis | Banyak pasien terlewat (30%) | Hanya 9% terlewat | Mengurangi biaya komplikasi karena deteksi lebih akurat |
 
+Tabel 2. Analisis Perbedaan Utama
+
 **Penyebab Perbedaan**
 
 A. Data Asli
-    - Class Imbalance: Dominasi kelas non-diabetes menyebabkan model cenderung mengabaikan minoritas (diabetes).
-    - Recall Rendah: Model kurang terlatih untuk mengenali pola diabetes.
+- Class Imbalance: Dominasi kelas non-diabetes menyebabkan model cenderung mengabaikan minoritas (diabetes).
+- Recall Rendah: Model kurang terlatih untuk mengenali pola diabetes.
 
 B. Data Sintetis (GAN)
-    - Augmentasi Kelas Minoritas: GAN menghasilkan data diabetes sintetis yang realistis, sehingga model belajar pola lebih baik.
-    - Trade-off Akurasi vs. Recall:
-        - Akurasi turun karena lebih banyak false positives (prediksi diabetes yang salah).
-        - Ini diterima karena tujuan utama adalah meminimalkan false negatives (pasien diabetes yang terlewat).
+- Augmentasi Kelas Minoritas: GAN menghasilkan data diabetes sintetis yang realistis, sehingga model belajar pola lebih baik.
+- Trade-off Akurasi vs. Recall:
+  - Akurasi turun karena lebih banyak false positives (prediksi diabetes yang salah).
+  - Ini diterima karena tujuan utama adalah meminimalkan false negatives (pasien diabetes yang terlewat).
 
 Metrik Evaluasi yang Digunakan:
 
 1. **Statistik Deskriptif dan Uji KS (Kolmogorov-Smirnov)**
 Formula:
 
-![Kolmogorov-Smirnov](/image/Kolmogorov-Smirnov.png)
+![Kolmogorov-Smirnov](https://github.com/user-attachments/assets/d53ff06a-8cda-463d-ac11-7c22da966262)
 
 Penjelasan:
 -   Mean dan std mengukur pusat dan sebaran distribusi data
@@ -386,7 +396,7 @@ Penjelasan:
 2. **Visualisasi PCA (Principal Component Analysis)**
 Formula:
 
-![Principal Component Analysis](/image/PCA.png)
+![PCA](https://github.com/user-attachments/assets/65168aec-2d13-45c0-987f-2ae15001351e)
 
 Penjelasan:
 -   Mereduksi dimensi data menjadi 2 komponen utama
@@ -395,13 +405,13 @@ Penjelasan:
 3. **Metrik Klasifikasi (Untuk Model Random Forest)**
 Formula:
 
-![Metrik Klasifikasi](/image/Metrik-Klasifikasi.png)
+![Metrik-Klasifikasi](https://github.com/user-attachments/assets/079d3024-9f2f-49bd-8371-0d479c04560d)
 
 Penjelasan:
 -   Mengukur performa model klasifikasi pada data sintetik
 -   F1-score khusus penting untuk data tidak seimbang
 
-![PCA Comparison: Real vs Synthetic Data](/image/Real_vs_Synthetic_Data.png)
+![Real_vs_Synthetic_Data](https://github.com/user-attachments/assets/fd396ec7-3263-4254-8c78-196f44e78a2c)
 
 ### Hasil Evaluasi
 
@@ -422,17 +432,17 @@ Analisis PCA:
 **Dampak Solusi terhadap Bisnis**
 
 A. Efisiensi Biaya Kesehatan 
-    - Deteksi dini (Recall 86.7%) mengurangi kebutuhan rawat inap akibat komplikasi.
+- Deteksi dini (Recall 86.7%) mengurangi kebutuhan rawat inap akibat komplikasi.
 
 B. Skrining Massal yang Efektif
-    - Model bisa dipakai di:
-        - Aplikasi kesehatan (input: usia, BMI, HbA1c → prediksi risiko).
-        - Klinik untuk prioritas pasien berisiko tinggi.
+- Model bisa dipakai di:
+  - Aplikasi kesehatan (input: usia, BMI, HbA1c → prediksi risiko).
+  - Klinik untuk prioritas pasien berisiko tinggi.
 
 C. Monetisasi
-    - Revenue Potensial:
-        - Kemitraan dengan asuransi: Model jadi alat underwriting risiko.
-        - Layanan premium: Skrining diabetes berbasis AI untuk perusahaan
+- Revenue Potensial:
+  - Kemitraan dengan asuransi: Model jadi alat underwriting risiko.
+  - Layanan premium: Skrining diabetes berbasis AI untuk perusahaan
 
 
 Kesimpulan:
