@@ -188,11 +188,10 @@ Pada proses _Data Preparation_ dilakukan kegiatan seperti:
 
 1. **Data Cleaning**
     - Mengecek keberadaan missing values dengan `data.isnull().sum()`.
-    - Menangani Outliers: a) Mengidentifikasi outliers pada kolom numerik menggunakan metode IQR (Interquartile Range). b) Menghapus outliers dengan memfilter data di antara batas bawah dan batas atas yang dihitung dari Q1, Q3, dan IQR.
+    - Menangani Outliers: a) Mengidentifikasi outliers pada kolom numerik menggunakan metode IQR (Interquartile Range).
 
 2. **Data Transformation**
-    - Encoding Variabel Kategorikal: a) Menggunakan One-Hot Encoding untuk mengubah variabel kategorikal 'gender' dan 'smoking_history' menjadi variabel numerik. b) `pd.get_dummies()` digunakan untuk membuat kolom dummy baru untuk setiap kategori. c) Kolom asli setelah encoding dihapus untuk menghindari redundansi.
-    - Scaling Data: a) Menggunakan MinMaxScaler untuk melakukan scaling pada kolom numerik 'age', 'bmi', 'HbA1c_level', dan 'blood_glucose_level' agar nilainya berada dalam rentang 0 dan 1. b) Scaling dilakukan untuk memastikan semua fitur memiliki rentang nilai yang serupa, yang penting untuk beberapa algoritma machine learning.
+    - Encoding Variabel Kategorikal: a) Menggunakan One-Hot Encoding untuk mengubah variabel kategorikal 'gender' dan 'smoking_history' menjadi variabel numerik. b) Kolom asli setelah encoding dihapus untuk menghindari redundansi.
 
 3. **Reduksi Dimensi (Dimensionality Reduction)**
     - Menggunakan PCA (Principal Component Analysis) untuk mengurangi jumlah fitur dalam dataset.
