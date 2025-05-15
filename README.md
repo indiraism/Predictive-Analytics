@@ -186,7 +186,7 @@ Pada gambar 2a. prediktor terkuat diabetes: glukosa darah dan HbA1c. Usia, BMI, 
 
 Pada proses _Data Preparation_ dilakukan kegiatan seperti:
 
-1. **Encoding Fitur Kategorikal**
+1. **Encoding Fitur Kategorikal:**
 
 Fitur-fitur kategorikal dalam dataset perlu diubah menjadi format numerik agar dapat diproses oleh model machine learning. Dalam hal ini, digunakan metode **Binary Encoding untuk kolom** 'gender' dan 'smoking_history'.
 - Untuk kolom 'gender', nilai 'Male' diubah menjadi 1, sementara nilai lainnya (termasuk 'Female') diubah             menjadi 0.
