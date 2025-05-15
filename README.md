@@ -186,24 +186,25 @@ Pada gambar 2a. prediktor terkuat diabetes: glukosa darah dan HbA1c. Usia, BMI, 
 
 Pada proses _Data Preparation_ dilakukan kegiatan seperti:
 
-1. **Data Cleaning**
-    - Mengecek keberadaan missing values dengan `data.isnull().sum()`.
-    - Menangani Outliers: a) Mengidentifikasi outliers pada kolom numerik menggunakan metode IQR (Interquartile Range).
+1. **Encoding Fitur Kategorikal**
 
-2. **Data Transformation**
-    - Encoding Variabel Kategorikal: a) Menggunakan One-Hot Encoding untuk mengubah variabel kategorikal 'gender' dan 'smoking_history' menjadi variabel numerik. b) Kolom asli setelah encoding dihapus untuk menghindari redundansi.
+Fitur-fitur kategorikal dalam dataset perlu diubah menjadi format numerik agar dapat diproses oleh model machine learning. Dalam hal ini, digunakan metode **Binary Encoding untuk kolom** 'gender' dan 'smoking_history'.
+- Untuk kolom 'gender', nilai 'Male' diubah menjadi 1, sementara nilai lainnya (termasuk 'Female') diubah             menjadi 0.
+- Untuk kolom 'smoking_history', nilai-nilai 'ever', 'current', dan 'former' diubah menjadi 1, sedangkan nilai        lainnya (termasuk 'never' dan 'No Info') diubah menjadi 0.
+    
+Pendekatan ini dipilih untuk menyederhanakan representasi data kategorikal menjadi format biner, yang efisien dan cocok untuk model machine learning.
 
-3. **Reduksi Dimensi (Dimensionality Reduction)**
-    - Menggunakan PCA (Principal Component Analysis) untuk mengurangi jumlah fitur dalam dataset.
-    - PCA digunakan untuk mengubah fitur-fitur yang saling berkorelasi menjadi fitur-fitur baru yang tidak berkorelasi (principal components).
-    - Jumlah komponen PCA ditentukan berdasarkan explained variance ratio, yaitu persentase variansi yang dijelaskan oleh setiap komponen.
-    - Transformasi data dilakukan dengan `pca.fit_transform(X)` untuk mendapatkan fitur-fitur baru.
+2. **Data Splitting**
 
-4. **Pembagian Data (Data Splitting)**
-    - Membagi dataset menjadi data latih (train) dan data uji (test) menggunakan `train_test_split`.
-    - Data latih digunakan untuk melatih model machine learning, sedangkan data uji digunakan untuk mengevaluasi kinerja model.
-    - Proporsi pembagian data adalah 80% untuk data latih dan 20% untuk data uji, dengan `test_size=0.2`.
-    - `random_state` digunakan untuk memastikan pembagian data yang konsisten setiap kali kode dijalankan.
+Setelah data dibersihkan dan diubah, langkah selanjutnya adalah membagi data menjadi data latih dan data uji. Pembagian ini penting untuk mengevaluasi kinerja model. Data dibagi dengan proporsi 80% untuk data latih dan        20% untuk data uji, menggunakan fungsi `train_test_split` dari library Scikit-learn. Parameter `random_state`       digunakan untuk memastikan bahwa pembagian data selalu sama setiap kali kode dijalankan.
+
+3. **Feature Scaling**
+
+Untuk memastikan bahwa semua fitur memberikan kontribusi yang sama dalam pelatihan model, dilakukan penskalaan fitur numerik. StandardScaler digunakan untuk mengubah skala fitur-fitur numerik dalam data latih dan data uji. StandardScaler melakukan standardisasi dengan mengurangi nilai rata-rata dan membagi dengan standar deviasi, menghasilkan fitur dengan rata-rata nol dan variansi satu.
+
+4. **Principal Component Analysis (PCA)**
+
+Terakhir, dilakukan reduksi dimensi menggunakan Principal Component Analysis (PCA). PCA digunakan untuk mengurangi jumlah fitur dalam dataset sambil tetap mempertahankan informasi penting. Dalam kasus ini, PCA dikonfigurasi untuk mempertahankan 95% dari variansi data. Reduksi dimensi ini bertujuan untuk menyederhanakan model dan mengurangi risiko overfitting, serta mempercepat waktu komputasi. PCA diterapkan secara terpisah pada data latih dan data uji yang telah diskalakan.
 
 
 ## Modeling
