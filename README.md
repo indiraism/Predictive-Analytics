@@ -198,11 +198,7 @@ Pendekatan ini dipilih untuk menyederhanakan representasi data kategorikal menja
 
 Setelah data dibersihkan dan diubah, langkah selanjutnya adalah membagi data menjadi data latih dan data uji. Pembagian ini penting untuk mengevaluasi kinerja model. Data dibagi dengan proporsi 80% untuk data latih dan        20% untuk data uji, menggunakan fungsi `train_test_split` dari library Scikit-learn. Parameter `random_state`       digunakan untuk memastikan bahwa pembagian data selalu sama setiap kali kode dijalankan.
 
-3. **Feature Scaling**
-
-Untuk memastikan bahwa semua fitur memberikan kontribusi yang sama dalam pelatihan model, dilakukan penskalaan fitur numerik. StandardScaler digunakan untuk mengubah skala fitur-fitur numerik dalam data latih dan data uji. StandardScaler melakukan standardisasi dengan mengurangi nilai rata-rata dan membagi dengan standar deviasi, menghasilkan fitur dengan rata-rata nol dan variansi satu.
-
-4. **Principal Component Analysis (PCA)**
+3. **Principal Component Analysis (PCA)**
 
 Terakhir, dilakukan reduksi dimensi menggunakan Principal Component Analysis (PCA). PCA digunakan untuk mengurangi jumlah fitur dalam dataset sambil tetap mempertahankan informasi penting. Dalam kasus ini, PCA dikonfigurasi untuk mempertahankan 95% dari variansi data. Reduksi dimensi ini bertujuan untuk menyederhanakan model dan mengurangi risiko overfitting, serta mempercepat waktu komputasi. PCA diterapkan secara terpisah pada data latih dan data uji yang telah diskalakan.
 
